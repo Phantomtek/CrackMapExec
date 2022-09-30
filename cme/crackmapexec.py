@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 from cme.logger import setup_logger, setup_debug_logger, CMEAdapter
 from cme.helpers.logger import highlight
@@ -75,6 +76,8 @@ async def run_protocol(loop, protocol_obj, args, db, target, jitter):
     except asyncio.CancelledError:
         logging.debug("Stopping thread")
         thread.cancel()
+    except sqlite3.OperationalError as e:
+        logging.debug("Sqlite error - sqlite3.operationalError - {}".format(str(e)))
 
 async def start_threadpool(protocol_obj, args, db, targets, jitter):
     pool = ThreadPoolExecutor(max_workers=args.threads + 1)
@@ -143,24 +146,6 @@ def main():
             jitter = (int(start), int(end))
         else:
             jitter = (0, int(args.jitter))
-
-    if hasattr(args, 'username') and args.username:
-        for user in args.username:
-            if os.path.exists(user):
-                args.username.remove(user)
-                args.username.append(open(user, 'r'))
-
-    if hasattr(args, 'password') and args.password:
-        for passw in args.password:
-            if os.path.exists(passw):
-                args.password.remove(passw)
-                args.password.append(open(passw, 'r'))
-
-    elif hasattr(args, 'hash') and args.hash:
-        for ntlm_hash in args.hash:
-            if os.path.exists(ntlm_hash):
-                args.hash.remove(ntlm_hash)
-                args.hash.append(open(ntlm_hash, 'r'))
 
     if hasattr(args, 'cred_id') and args.cred_id:
         for cred_id in args.cred_id:

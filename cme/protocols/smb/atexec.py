@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import os
 import logging
 from impacket.dcerpc.v5 import tsch, transport
@@ -42,13 +45,7 @@ class TSCH_EXEC:
     def execute(self, command, output=False):
         self.__retOutput = output
         self.execute_handler(command)
-        try:
-            if isinstance(self.__outputBuffer, str):
-                return self.__outputBuffer
-            return self.__outputBuffer.decode()
-        except UnicodeDecodeError:
-            logging.debug('Decoding error detected, consider running chcp.com at the target, map the result with https://docs.python.org/3/library/codecs.html#standard-encodings')
-            return self.__outputBuffer.decode('cp437')
+        return self.__outputBuffer
 
     def output_callback(self, data):
         self.__outputBuffer = data
@@ -56,7 +53,7 @@ class TSCH_EXEC:
     def execute_handler(self, data):
         if self.__retOutput:
             try:
-                self.doStuff(data, fileless=True)
+                self.doStuff(data, fileless=False)
             except:
                 self.doStuff(data)
         else:

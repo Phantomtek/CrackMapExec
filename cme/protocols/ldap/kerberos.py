@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import logging
 import random
 from os import getenv
@@ -9,6 +12,7 @@ from impacket.krb5.kerberosv5 import sendReceive, KerberosError, getKerberosTGT,
 from impacket.krb5.types import KerberosTime, Principal
 from impacket.krb5 import constants
 from impacket.ntlm import compute_lmhash, compute_nthash
+from impacket.ldap import ldap as ldap_impacket
 from impacket.examples import logger
 from binascii import hexlify, unhexlify
 from datetime import datetime,timedelta
@@ -33,7 +37,7 @@ class KerberosAttacks:
                 self.nthash = self.hash
         
         if self.password is None:
-            self.password = ''
+            self.password = ''    
 
     def outputTGS(self, tgs, oldSessionKey, sessionKey, username, spn, fd=None):
         decodedTGS = decoder.decode(tgs, asn1Spec=TGS_REP())[0]
@@ -82,10 +86,6 @@ class KerberosAttacks:
     def getTGT_kerberoasting(self):
         try:
             ccache = CCache.loadFile(getenv('KRB5CCNAME'))
-        except:
-            # No cache present
-            pass
-        else:
             # retrieve user and domain information from CCache file if needed
             if self.domain == '':
                 domain = ccache.principal.realm['data']
@@ -100,6 +100,9 @@ class KerberosAttacks:
                 return TGT
             else:
                 logging.debug("No valid credentials found in cache. ")
+        except:
+            # No cache present
+            pass
 
         # No TGT in cache, request it
         userName = Principal(self.username, type=constants.PrincipalNameType.NT_PRINCIPAL.value)

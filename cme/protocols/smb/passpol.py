@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #Stolen from https://github.com/Wh1t3Fox/polenum
 
 import logging
@@ -172,6 +174,8 @@ class PassPolDump:
                          'pass_prop': self.__pass_prop, 'rst_accnt_lock_counter': self.__rst_accnt_lock_counter,
                          'lock_accnt_dur': self.__lock_accnt_dur, 'accnt_lock_thres': self.__accnt_lock_thres,
                          'force_logoff_time': self.__force_logoff_time}
+
+        dce.disconnect()
 
     def pretty_print(self):
 
